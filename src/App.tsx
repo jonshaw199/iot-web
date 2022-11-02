@@ -7,6 +7,7 @@ import Dashboard from "./components/Dashboard";
 import Messages from "./components/Messages";
 import theme from "./theme";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import WS from "./components/WS";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -42,6 +43,7 @@ function App() {
             <Route path="messages/" element={<Messages />} />
           </Routes>
         </Main>
+        <WS url="ws://127.0.0.1:3000" />
       </ThemeProvider>
     </Router>
   );
