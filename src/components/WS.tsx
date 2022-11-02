@@ -5,14 +5,16 @@ export default function WS({ url }: { url: string }) {
   const client = useRef<w3cwebsocket>();
 
   useEffect(() => {
-    client.current = new W3CWebSocket(url);
-    client.current.onopen = () => {
-      console.log("WS connected");
-    };
-    client.current.onmessage = (msg) => {
-      console.log(`WS msg: ${msg}`);
-    };
-  }, []);
+    if (url) {
+      client.current = new W3CWebSocket(url);
+      client.current.onopen = () => {
+        console.log("WS connected");
+      };
+      client.current.onmessage = (msg) => {
+        console.log(`WS msg: ${msg}`);
+      };
+    }
+  }, [url]);
 
   return <></>;
 }
