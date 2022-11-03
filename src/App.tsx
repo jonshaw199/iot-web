@@ -51,7 +51,7 @@ function App() {
               <Route path="messages/" element={<Messages />} />
             </Routes>
           </Main>
-          <WS url="ws://127.0.0.1:3000" />
+          <WS url="ws://127.0.0.1:3000/1/web/ws" />
         </ThemeProvider>
       </Router>
     </GlobalContext.Provider>
