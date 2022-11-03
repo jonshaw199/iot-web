@@ -70,11 +70,7 @@ function MessageTableRow({
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
-            </Box>
+            <Box sx={{ margin: 1 }}>Message</Box>
           </Collapse>
         </TableCell>
       </TableRow>
@@ -93,7 +89,7 @@ function MessageTable() {
             <TableCell />
             <TableCell>Sender ID</TableCell>
             <TableCell align="right">Type</TableCell>
-            <TableCell align="right">State&nbsp;(g)</TableCell>
+            <TableCell align="right">State</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
