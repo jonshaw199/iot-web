@@ -18,7 +18,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {"@backend/*": ["../af1-light-show-server-1/*"]}
   },
   "include": [
     "src"

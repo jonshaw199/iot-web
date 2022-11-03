@@ -102,7 +102,6 @@ export default function Nav({
       </AppBar>
       <Drawer
         sx={{
-          width: theme.drawer.width,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: theme.drawer.width,
