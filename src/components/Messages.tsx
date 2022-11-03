@@ -13,6 +13,11 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import { GlobalContext } from "../Context";
+import { Collapse, IconButton } from "@mui/material";
+import { Message } from "@backend/types";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { Box } from "@mui/system";
 
 function NewMessage() {
   return (
@@ -36,6 +41,47 @@ function NewMessage() {
   );
 }
 
+function MessageTableRow({
+  message,
+  key,
+}: {
+  message: Message;
+  key: React.Key;
+}) {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <>
+      <TableRow key={key} sx={{ "& > *": { borderBottom: "unset" } }}>
+        <TableCell>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {message.senderID}
+        </TableCell>
+        <TableCell align="right">{message.type}</TableCell>
+        <TableCell align="right">{message.state}</TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <Typography variant="h6" gutterBottom component="div">
+                History
+              </Typography>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>
+  );
+}
+
 function MessageTable() {
   const { messages } = React.useContext(GlobalContext);
 
@@ -44,23 +90,15 @@ function MessageTable() {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
+            <TableCell />
             <TableCell>Sender ID</TableCell>
             <TableCell align="right">Type</TableCell>
             <TableCell align="right">State&nbsp;(g)</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {messages.map(({ senderID, state, transportType, type }, i) => (
-            <TableRow
-              key={i}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {senderID}
-              </TableCell>
-              <TableCell align="right">{type}</TableCell>
-              <TableCell align="right">{state}</TableCell>
-            </TableRow>
+          {messages.map((message, i) => (
+            <MessageTableRow message={message} key={i} />
           ))}
         </TableBody>
       </Table>
