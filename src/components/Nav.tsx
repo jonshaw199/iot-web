@@ -19,6 +19,7 @@ import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
+import GroupIcon from "@mui/icons-material/Group";
 import { Link } from "react-router-dom";
 
 interface AppBarProps extends MuiAppBarProps {
@@ -126,6 +127,7 @@ export default function Nav({
           <NavItem text="Dashboard" link="/" icon={<DashboardIcon />} />
           <NavItem text="Messages" link="messages/" icon={<InboxIcon />} />
           <NavItem text="Settings" link="settings/" icon={<SettingsIcon />} />
+          <NavItem text="Users" link="users/" icon={<GroupIcon />} />
         </List>
       </Drawer>
     </Box>

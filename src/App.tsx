@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { styled, ThemeProvider } from "@mui/material/styles";
 
-import { Message } from "@backend/types";
+import { Message, User } from "@backend/types";
 
 import "./App.css";
 import Nav from "./components/Nav";
@@ -11,6 +11,8 @@ import theme from "./theme";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WS from "./components/WS";
 import { GlobalContext } from "./Context";
+import Users from "./components/Users";
+import Settings from "./components/Settings";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -30,14 +32,20 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   }),
 }));
 
+const orgId = 1;
+const deviceId = -1;
+
 function App() {
   const [open, setOpen] = useState(false);
   const [messages] = useState<Message[]>([
     { senderID: 1, state: 2, transportType: 3, type: 4 },
   ]);
+  const [users] = useState<User[]>([
+    { name: "jim bob", email: "jim@bob.com", password: "" },
+  ]);
 
   return (
-    <GlobalContext.Provider value={{ messages }}>
+    <GlobalContext.Provider value={{ messages, users }}>
       <Router>
         <ThemeProvider theme={theme}>
           <Nav
@@ -49,9 +57,13 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="messages/" element={<Messages />} />
+              <Route path="users/" element={<Users />} />
+              <Route path="settings/" element={<Settings />} />
             </Routes>
           </Main>
-          <WS url="ws://127.0.0.1:3000/1/web/ws" />
+          <WS
+            url={`ws://127.0.0.1:3000/web/ws?orgId=${orgId}&deviceId=${deviceId}`}
+          />
         </ThemeProvider>
       </Router>
     </GlobalContext.Provider>

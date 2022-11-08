@@ -1,9 +1,4 @@
 import * as React from "react";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -14,34 +9,12 @@ import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import { GlobalContext } from "../Context";
 import { Collapse, IconButton } from "@mui/material";
-import { Message } from "@backend/types";
+import { User } from "@backend/types";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Box } from "@mui/system";
 
-function NewMessage() {
-  return (
-    <div>
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography>New Message</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-    </div>
-  );
-}
-
-function MessageTableRow({ message }: { message: Message }) {
+function UsersTableRow({ user }: { user: User }) {
   const [open, setOpen] = React.useState(false);
   return (
     <>
@@ -56,15 +29,14 @@ function MessageTableRow({ message }: { message: Message }) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {message.senderID}
+          {user.name}
         </TableCell>
-        <TableCell>{message.type}</TableCell>
-        <TableCell>{message.state}</TableCell>
+        <TableCell>{user.email}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>Message</Box>
+            <Box sx={{ margin: 1 }}>User</Box>
           </Collapse>
         </TableCell>
       </TableRow>
@@ -72,8 +44,8 @@ function MessageTableRow({ message }: { message: Message }) {
   );
 }
 
-function MessageTable() {
-  const { messages } = React.useContext(GlobalContext);
+function UsersTable() {
+  const { users } = React.useContext(GlobalContext);
 
   return (
     <TableContainer component={Paper}>
@@ -81,14 +53,13 @@ function MessageTable() {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Sender ID</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>State</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Email</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {messages.map((message, i) => (
-            <MessageTableRow message={message} key={i} />
+          {users.map((user, i) => (
+            <UsersTableRow user={user} key={i} />
           ))}
         </TableBody>
       </Table>
@@ -105,8 +76,7 @@ const Container = styled("div")(({ theme }) => ({
 export default function Messages() {
   return (
     <Container>
-      <NewMessage />
-      <MessageTable />
+      <UsersTable />
     </Container>
   );
 }
