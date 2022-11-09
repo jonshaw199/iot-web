@@ -7,12 +7,51 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
-import { GlobalContext } from "../Context";
-import { Collapse, IconButton } from "@mui/material";
-import { User } from "@backend/types";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button,
+  Collapse,
+  IconButton,
+  TextField,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Box } from "@mui/system";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+import { User } from "@backend/types";
+import { GlobalContext } from "../Context";
+
+function NewUser() {
+  const theme = useTheme();
+  return (
+    <div>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography>New User</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box display="flex" gap={1} flexWrap="wrap">
+            <TextField label="Name" />
+            <TextField label="Email" />
+            <TextField label="Password" />
+          </Box>
+          <Box py={theme.spacing(1)}>
+            <Button variant="outlined">Submit</Button>
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+    </div>
+  );
+}
 
 function UsersTableRow({ user }: { user: User }) {
   const [open, setOpen] = React.useState(false);
@@ -76,6 +115,7 @@ const Container = styled("div")(({ theme }) => ({
 export default function Messages() {
   return (
     <Container>
+      <NewUser />
       <UsersTable />
     </Container>
   );
