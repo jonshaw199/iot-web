@@ -25,9 +25,34 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { User } from "@backend/types";
 import { GlobalContext } from "../Context";
+import { create as createUser } from "../api/user";
+
+const Error = styled("div")(({ theme }) => ({
+  color: "red",
+  paddingTop: theme.spacing(1),
+}));
 
 function NewUser() {
   const theme = useTheme();
+
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [pass, setPass] = React.useState("");
+  const [error, setError] = React.useState("");
+
+  const submit = React.useCallback(() => {
+    if (name && email && pass) {
+      setError("");
+      try {
+        createUser({ email, name, password: pass });
+      } catch (e) {
+        setError(String(e));
+      }
+    } else {
+      setError("Please fill out all required fields");
+    }
+  }, [name, email, pass]);
+
   return (
     <div>
       <Accordion>
@@ -40,12 +65,32 @@ function NewUser() {
         </AccordionSummary>
         <AccordionDetails>
           <Box display="flex" gap={1} flexWrap="wrap">
-            <TextField label="Name" />
-            <TextField label="Email" />
-            <TextField label="Password" />
+            <TextField
+              required
+              label="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              required
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              required
+              label="Password"
+              type="password"
+              value={pass}
+              onChange={(e) => setPass(e.target.value)}
+            />
           </Box>
-          <Box py={theme.spacing(1)}>
-            <Button variant="outlined">Submit</Button>
+          {error && <Error>{error}</Error>}
+          <Box pt={theme.spacing(1)}>
+            <Button variant="outlined" onClick={() => submit()}>
+              Submit
+            </Button>
           </Box>
         </AccordionDetails>
       </Accordion>
