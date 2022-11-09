@@ -32,6 +32,11 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   }),
 }));
 
+const Outer = styled("div")(({ theme }) => ({
+  height: "100vh",
+  backgroundColor: theme.page.backgroundColor,
+}));
+
 const orgId = 1;
 const deviceId = -1;
 
@@ -48,19 +53,21 @@ function App() {
     <GlobalContext.Provider value={{ messages, users }}>
       <Router>
         <ThemeProvider theme={theme}>
-          <Nav
-            open={open}
-            onOpen={() => setOpen(true)}
-            onClose={() => setOpen(false)}
-          />
-          <Main open={open}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="messages/" element={<Messages />} />
-              <Route path="users/" element={<Users />} />
-              <Route path="settings/" element={<Settings />} />
-            </Routes>
-          </Main>
+          <Outer>
+            <Nav
+              open={open}
+              onOpen={() => setOpen(true)}
+              onClose={() => setOpen(false)}
+            />
+            <Main open={open}>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="messages/" element={<Messages />} />
+                <Route path="users/" element={<Users />} />
+                <Route path="settings/" element={<Settings />} />
+              </Routes>
+            </Main>
+          </Outer>
           <WS
             url={`ws://127.0.0.1:3000/web/ws?orgId=${orgId}&deviceId=${deviceId}`}
           />
