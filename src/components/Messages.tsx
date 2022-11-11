@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -12,7 +12,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
-import { GlobalContext } from "../Context";
 import { Collapse, IconButton } from "@mui/material";
 import { Message } from "@backend/types";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -42,7 +41,7 @@ function NewMessage() {
 }
 
 function MessageTableRow({ message }: { message: Message }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   return (
     <>
       <TableRow sx={{ "& > *": { borderBottom: "unset !important" } }}>
@@ -73,7 +72,9 @@ function MessageTableRow({ message }: { message: Message }) {
 }
 
 function MessageTable() {
-  const { messages } = React.useContext(GlobalContext);
+  const [messages] = useState<Message[]>([
+    { senderID: 1, state: 2, transportType: 3, type: 4 },
+  ]);
 
   return (
     <TableContainer component={Paper}>

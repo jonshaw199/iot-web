@@ -20,6 +20,6 @@ export type ActionCreator<A extends any[], P> = (
   }
 ) => Action<P> | Promise<Action<P>> | undefined | null;
 
-export type ActionCreators<P> = {
+export type ActionCreators<P = any> = {
   [key: string]: ActionCreator<any, P>;
 };

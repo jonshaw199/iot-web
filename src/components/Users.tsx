@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useMemo, useState, useCallback } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -24,8 +24,8 @@ import { Box } from "@mui/system";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { User } from "@backend/types";
-import { GlobalContext } from "../Context";
 import { create as createUser } from "../api/user";
+import useUserState from "../actions/user";
 
 const Error = styled("div")(({ theme }) => ({
   color: "red",
@@ -35,12 +35,12 @@ const Error = styled("div")(({ theme }) => ({
 function NewUser() {
   const theme = useTheme();
 
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [pass, setPass] = React.useState("");
-  const [error, setError] = React.useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [pass, setPass] = useState("");
+  const [error, setError] = useState("");
 
-  const submit = React.useCallback(() => {
+  const submit = useCallback(() => {
     if (name && email && pass) {
       setError("");
       try {
@@ -99,7 +99,7 @@ function NewUser() {
 }
 
 function UsersTableRow({ user }: { user: User }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   return (
     <>
       <TableRow sx={{ "& > *": { borderBottom: "unset !important" } }}>
@@ -129,7 +129,9 @@ function UsersTableRow({ user }: { user: User }) {
 }
 
 function UsersTable() {
-  const { users } = React.useContext(GlobalContext);
+  const { users: userMap } = useUserState();
+
+  const users = useMemo(() => Array.from(userMap.values()), [userMap]);
 
   return (
     <TableContainer component={Paper}>

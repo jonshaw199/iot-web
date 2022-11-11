@@ -1,12 +1,12 @@
 import { useReducer, useCallback, Reducer } from "react";
 import { Action, ActionCreators } from "../types";
 
-const useReducerWithActions = <S, P, A extends ActionCreators<P>>({
+const useReducerWithActions = <S, A extends ActionCreators>({
   reducer,
   initialState,
   actionCreators,
 }: {
-  reducer: Reducer<S, Action<P>>;
+  reducer: Reducer<S, Action<any>>;
   initialState: S;
   actionCreators: A;
 }) => {

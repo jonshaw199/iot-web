@@ -77,11 +77,11 @@ const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
 };
 
 type UserActionCreators = {
-  getList: () => Promise<Action<UserPayload>>;
-  get: (uuid: string) => Promise<Action<UserPayload>>;
-  create: (user: Partial<User>) => Promise<Action<UserPayload>>;
-  update: (uuid: string, user: Partial<User>) => Promise<Action<UserPayload>>;
-  remove: (uuid: string) => Promise<Action<UserPayload>>;
+  getList: () => Promise<Action>;
+  get: (uuid: string) => Promise<Action>;
+  create: (user: Partial<User>) => Promise<Action>;
+  update: (uuid: string, user: Partial<User>) => Promise<Action>;
+  remove: (uuid: string) => Promise<Action>;
 };
 
 const actionCreators: UserActionCreators = {
@@ -113,7 +113,7 @@ const actionCreators: UserActionCreators = {
 };
 
 export default function useUserState() {
-  return useReducerWithActions<UserState, UserPayload, UserActionCreators>({
+  return useReducerWithActions<UserState, UserActionCreators>({
     reducer,
     initialState,
     actionCreators,
