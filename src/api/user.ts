@@ -21,7 +21,7 @@ export function update(uuid: string, user: Partial<User>) {
   });
 }
 
-export function deleteUser(uuid: string) {
+export function remove(uuid: string) {
   return req<User>(`/user/${uuid}`, {
     method: "DELETE",
     headers: {
@@ -32,4 +32,8 @@ export function deleteUser(uuid: string) {
 
 export function getList() {
   return req<User[]>("/user");
+}
+
+export function get(uuid: string) {
+  return req<User>(`/user/${uuid}`);
 }

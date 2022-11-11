@@ -1,7 +1,7 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { styled, ThemeProvider } from "@mui/material/styles";
 
-import { Message, User } from "@backend/types";
+import { Message } from "@backend/types";
 
 import "./App.css";
 import Nav from "./components/Nav";
@@ -13,12 +13,7 @@ import WS from "./components/WS";
 import { GlobalContext } from "./Context";
 import Users from "./components/Users";
 import Settings from "./components/Settings";
-import { getList as getUsers } from "./api/user";
-import {
-  reducer as userReducer,
-  initialState as initialUserState,
-  ActionType,
-} from "./actions/user";
+import useUserState from "./actions/user";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -51,17 +46,10 @@ function App() {
   const [messages] = useState<Message[]>([
     { senderID: 1, state: 2, transportType: 3, type: 4 },
   ]);
-  const [users] = useState<User[]>([
-    { name: "jim bob", email: "jim@bob.com", password: "", uuid: "" },
-  ]);
 
-  const [, dispatch] = useReducer(userReducer, initialUserState);
-
-  useEffect(() => {
-    getUsers().then((users) => {
-      dispatch({ type: ActionType.GET_LIST, users });
-    });
-  }, []);
+  const userState = useUserState();
+  const { users: userMap } = userState;
+  const users = useMemo(() => Array.from(userMap.values()), [userMap]);
 
   return (
     <GlobalContext.Provider value={{ messages, users }}>

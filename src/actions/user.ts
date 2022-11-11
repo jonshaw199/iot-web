@@ -1,49 +1,51 @@
 import { Reducer } from "react";
 
+import { Action } from "../types";
 import { User } from "@backend/types";
+import { getList, get, create, remove, update } from "../api/user";
+import useReducerWithActions from "../hooks/useReducerWithActions";
 
-export enum ActionType {
+enum UserActionType {
   GET_LIST = "GET_LIST",
   GET = "GET",
   UPDATE = "UPDATE",
   CREATE = "CREATE",
-  DELETE = "DELETE",
+  REMOVE = "REMOVE",
 }
 
-export type Action = {
-  type: ActionType;
+type UserPayload = {
   user?: User;
   users?: User[];
 };
 
-export type State = {
+type UserState = {
   users: Map<string, User>;
   errorMsg: string;
 };
 
-export const initialState: State = { users: new Map(), errorMsg: "" };
+const initialState: UserState = { users: new Map(), errorMsg: "" };
 
-export const reducer: Reducer<State, Action> = (state, action) => {
+const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
   state.errorMsg = "";
   try {
     switch (action.type) {
-      case ActionType.CREATE:
-        if (action.user) {
-          state.users.set(action.user.uuid, action.user);
+      case UserActionType.CREATE:
+        if (action.payload?.user) {
+          state.users.set(action.payload.user.uuid, action.payload.user);
         } else {
           throw new Error("No user added");
         }
         break;
-      case ActionType.DELETE:
-        if (action.user) {
-          state.users.delete(action.user.uuid);
+      case UserActionType.REMOVE:
+        if (action.payload?.user) {
+          state.users.delete(action.payload.user.uuid);
         } else {
           throw new Error("No user removed");
         }
         break;
-      case ActionType.GET_LIST:
-        if (action.users) {
-          state.users = action.users.reduce(
+      case UserActionType.GET_LIST:
+        if (action.payload?.users) {
+          state.users = action.payload?.users.reduce(
             (map, usr) => map.set(usr.uuid, usr),
             new Map()
           );
@@ -51,16 +53,16 @@ export const reducer: Reducer<State, Action> = (state, action) => {
           throw new Error("No user list");
         }
         break;
-      case ActionType.GET:
-        if (action.user) {
-          state.users.set(action.user.uuid, action.user);
+      case UserActionType.GET:
+        if (action.payload?.user) {
+          state.users.set(action.payload?.user.uuid, action.payload.user);
         } else {
           throw new Error("No user");
         }
         break;
-      case ActionType.UPDATE:
-        if (action.user) {
-          state.users.set(action.user.uuid, action.user);
+      case UserActionType.UPDATE:
+        if (action.payload?.user) {
+          state.users.set(action.payload.user.uuid, action.payload.user);
         } else {
           throw new Error("Cannot update user");
         }
@@ -73,3 +75,47 @@ export const reducer: Reducer<State, Action> = (state, action) => {
   }
   return state;
 };
+
+type UserActionCreators = {
+  getList: () => Promise<Action<UserPayload>>;
+  get: (uuid: string) => Promise<Action<UserPayload>>;
+  create: (user: Partial<User>) => Promise<Action<UserPayload>>;
+  update: (uuid: string, user: Partial<User>) => Promise<Action<UserPayload>>;
+  remove: (uuid: string) => Promise<Action<UserPayload>>;
+};
+
+const actionCreators: UserActionCreators = {
+  getList: () =>
+    getList().then((users) => ({
+      type: UserActionType.GET_LIST,
+      payload: { users },
+    })),
+  get: (uuid: string) =>
+    get(uuid).then((user) => ({
+      type: UserActionType.GET,
+      payload: { user },
+    })),
+  create: (user: Partial<User>) =>
+    create(user).then((user) => ({
+      type: UserActionType.CREATE,
+      payload: { user },
+    })),
+  update: (uuid: string, user: Partial<User>) =>
+    update(uuid, user).then((user) => ({
+      type: UserActionType.UPDATE,
+      payload: { user },
+    })),
+  remove: (uuid: string) =>
+    remove(uuid).then((user) => ({
+      type: UserActionType.REMOVE,
+      payload: { user },
+    })),
+};
+
+export default function useUserState() {
+  return useReducerWithActions<UserState, UserPayload, UserActionCreators>({
+    reducer,
+    initialState,
+    actionCreators,
+  });
+}
