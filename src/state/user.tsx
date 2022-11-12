@@ -153,7 +153,7 @@ const userReducer: Reducer<UserState, Action<UserPayload>> = (
 };
 
 export function useUserState() {
-  return useReducerWithActions<UserState, UserActionCreators>({
+  return useReducerWithActions<UserState, UserPayload, UserActionCreators>({
     reducer: userReducer,
     initialState: initialUserState,
     actionCreators: userActionCreators,
