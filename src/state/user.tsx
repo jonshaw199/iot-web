@@ -33,10 +33,15 @@ const initialUserState: UserState = {
 };
 
 type UserActionCreators = {
-  getList: () => Promise<Action>;
-  get: (uuid: string) => Promise<Action>;
-  create: (user: Partial<User>) => Promise<Action>;
-  update: (uuid: string, user: Partial<User>) => Promise<Action>;
+  getList: () => Promise<Action<{ users: User[] }>>;
+  get: (uuid: string) => Promise<Action<{ user: User }>>;
+  create: (
+    user: Partial<User>
+  ) => Promise<Action<{ user: User; token: string }>>;
+  update: (
+    uuid: string,
+    user: Partial<User>
+  ) => Promise<Action<{ user: User }>>;
   remove: (uuid: string) => Promise<Action>;
   auth: (cred: AuthRequest) => Promise<Action>;
 };
@@ -48,29 +53,29 @@ const userActionCreators: UserActionCreators = {
       payload: { users },
     })),
   get: (uuid: string) =>
-    get(uuid).then((res) => ({
+    get(uuid).then(({ user }) => ({
       type: UserActionType.GET,
-      payload: { user: res.user },
+      payload: { user },
     })),
   create: (user: Partial<User>) =>
-    create(user).then((res) => ({
+    create(user).then(({ user, token }) => ({
       type: UserActionType.CREATE,
-      payload: { user: res.user },
+      payload: { user, token },
     })),
   update: (uuid: string, user: Partial<User>) =>
-    update(uuid, user).then((res) => ({
+    update(uuid, user).then(({ user }) => ({
       type: UserActionType.UPDATE,
-      payload: { user: res.user },
+      payload: { user },
     })),
   remove: (uuid: string) =>
-    remove(uuid).then((res) => ({
+    remove(uuid).then(({ user }) => ({
       type: UserActionType.REMOVE,
-      payload: { user: res.user },
+      payload: { user },
     })),
   auth: (cred: AuthRequest) =>
-    auth(cred).then((res) => ({
+    auth(cred).then(({ token }) => ({
       type: UserActionType.AUTH,
-      payload: { token: res.token },
+      payload: { token },
     })),
 };
 
