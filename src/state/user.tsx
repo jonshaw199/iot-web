@@ -1,8 +1,8 @@
 import { Reducer, createContext } from "react";
 
 import { Action } from "../types";
-import { User } from "@backend/types";
-import { getList, get, create, remove, update } from "../api/user";
+import { AuthRequest, AuthResponse, User } from "@backend/types";
+import { getList, get, create, remove, update, auth } from "../api/user";
 import useReducerWithActions from "../hooks/useReducerWithActions";
 
 enum UserActionType {
@@ -11,19 +11,22 @@ enum UserActionType {
   UPDATE = "UPDATE",
   CREATE = "CREATE",
   REMOVE = "REMOVE",
+  AUTH = "AUTH",
 }
 
 type UserPayload = {
   user?: User;
   users?: User[];
+  token?: string;
 };
 
 type UserState = {
   users: Map<string, User>;
   errorMsg: string;
+  token: string;
 };
 
-const initialState: UserState = { users: new Map(), errorMsg: "" };
+const initialState: UserState = { users: new Map(), errorMsg: "", token: "" };
 
 const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
   state.errorMsg = "";
@@ -80,6 +83,15 @@ const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
           throw new Error("Cannot update user");
         }
         break;
+      case UserActionType.AUTH:
+        if (action.payload?.token) {
+          state = {
+            ...state,
+            token: action.payload.token,
+          };
+        } else {
+          throw new Error("No token");
+        }
     }
   } catch (e) {
     if (typeof e === "string") {
@@ -95,6 +107,7 @@ type UserActionCreators = {
   create: (user: Partial<User>) => Promise<Action>;
   update: (uuid: string, user: Partial<User>) => Promise<Action>;
   remove: (uuid: string) => Promise<Action>;
+  auth: (cred: AuthRequest) => Promise<Action>;
 };
 
 const actionCreators: UserActionCreators = {
@@ -109,9 +122,9 @@ const actionCreators: UserActionCreators = {
       payload: { user },
     })),
   create: (user: Partial<User>) =>
-    create(user).then((user) => ({
+    create(user).then((rsp) => ({
       type: UserActionType.CREATE,
-      payload: { user },
+      payload: { user: rsp.user },
     })),
   update: (uuid: string, user: Partial<User>) =>
     update(uuid, user).then((user) => ({
@@ -122,6 +135,11 @@ const actionCreators: UserActionCreators = {
     remove(uuid).then((user) => ({
       type: UserActionType.REMOVE,
       payload: { user },
+    })),
+  auth: (cred: AuthRequest) =>
+    auth(cred).then((res: AuthResponse) => ({
+      type: UserActionType.AUTH,
+      payload: { token: res.token },
     })),
 };
 

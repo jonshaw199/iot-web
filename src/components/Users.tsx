@@ -101,6 +101,8 @@ function NewUser() {
 
 function UsersTableRow({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
+  const { remove } = useContext(GlobalUserContext);
+
   return (
     <>
       <TableRow sx={{ "& > *": { borderBottom: "unset !important" } }}>
@@ -121,7 +123,15 @@ function UsersTableRow({ user }: { user: User }) {
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>User</Box>
+            <Box sx={{ margin: 1 }}>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => remove(user.uuid)}
+              >
+                Delete
+              </Button>
+            </Box>
           </Collapse>
         </TableCell>
       </TableRow>
