@@ -37,8 +37,8 @@ const Outer = styled("div")(({ theme }) => ({
   backgroundColor: theme.page.backgroundColor,
 }));
 
-const orgId = 1;
-const deviceId = -1;
+const orgId = 1; // to do
+const deviceId = -1; // to do
 
 function App() {
   const [open, setOpen] = useState(false);
