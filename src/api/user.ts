@@ -39,7 +39,7 @@ export function get(uuid: string) {
 }
 
 export function auth(body: AuthRequest) {
-  return req<AuthResponse>("/authenticate", {
+  return req<AuthResponse>("/user/authenticate", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

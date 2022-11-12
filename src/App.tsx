@@ -11,6 +11,8 @@ import WS from "./components/WS";
 import Users from "./components/Users";
 import Settings from "./components/Settings";
 import { GlobalUserContext, useUserState } from "./state/user";
+import { useMemo } from "react";
+import Login from "./components/Login";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -41,25 +43,34 @@ const deviceId = -1;
 function App() {
   const [open, setOpen] = useState(false);
   const userState = useUserState();
+  const { token } = userState;
+
+  const loggedIn = useMemo(() => !!token, [token]);
 
   return (
     <Router>
       <ThemeProvider theme={theme}>
         <GlobalUserContext.Provider value={userState}>
           <Outer>
-            <Nav
-              open={open}
-              onOpen={() => setOpen(true)}
-              onClose={() => setOpen(false)}
-            />
-            <Main open={open}>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="messages/" element={<Messages />} />
-                <Route path="users/" element={<Users />} />
-                <Route path="settings/" element={<Settings />} />
-              </Routes>
-            </Main>
+            {loggedIn ? (
+              <>
+                <Nav
+                  open={open}
+                  onOpen={() => setOpen(true)}
+                  onClose={() => setOpen(false)}
+                />
+                <Main open={open}>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="messages/" element={<Messages />} />
+                    <Route path="users/" element={<Users />} />
+                    <Route path="settings/" element={<Settings />} />
+                  </Routes>
+                </Main>
+              </>
+            ) : (
+              <Login />
+            )}
           </Outer>
           <WS
             url={`ws://127.0.0.1:3000/web/ws?orgId=${orgId}&deviceId=${deviceId}`}
