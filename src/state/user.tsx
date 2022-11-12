@@ -82,21 +82,24 @@ const userReducer: Reducer<UserState, Action<UserPayload>> = (
   try {
     switch (action.type) {
       case UserActionType.CREATE:
+      case UserActionType.GET:
+      case UserActionType.UPDATE:
         if (action.payload?.user) {
-          state = { ...state };
-          state.users = new Map(state.users).set(
-            action.payload.user.uuid,
-            action.payload.user
-          );
-          // token?
+          state = {
+            ...state,
+            users: new Map(state.users).set(
+              action.payload.user.uuid,
+              action.payload.user
+            ),
+          };
+          // token on create?
         } else {
-          throw new Error("No user added");
+          throw new Error("No user");
         }
         break;
       case UserActionType.REMOVE:
         if (action.payload?.user) {
-          state = { ...state };
-          state.users = new Map(state.users);
+          state = { ...state, users: new Map(state.users) };
           state.users.delete(action.payload.user.uuid);
         } else {
           throw new Error("No user removed");
@@ -104,33 +107,15 @@ const userReducer: Reducer<UserState, Action<UserPayload>> = (
         break;
       case UserActionType.GET_LIST:
         if (action.payload?.users) {
-          state = { ...state };
-          state.users = action.payload.users.reduce(
-            (prev, cur) => prev.set(cur.uuid, cur),
-            new Map()
-          );
+          state = {
+            ...state,
+            users: action.payload.users.reduce(
+              (prev, cur) => prev.set(cur.uuid, cur),
+              new Map()
+            ),
+          };
         } else {
           throw new Error("No user list");
-        }
-        break;
-      case UserActionType.GET:
-        if (action.payload?.user) {
-          state = { ...state };
-          state.users = new Map(state.users);
-          state.users.set(action.payload?.user.uuid, action.payload.user);
-        } else {
-          throw new Error("No user");
-        }
-        break;
-      case UserActionType.UPDATE:
-        if (action.payload?.user) {
-          state = { ...state };
-          state.users = new Map(state.users).set(
-            action.payload.user.uuid,
-            action.payload.user
-          );
-        } else {
-          throw new Error("Cannot update user");
         }
         break;
       case UserActionType.AUTH:
