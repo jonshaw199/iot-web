@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useContext } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -24,8 +24,8 @@ import { Box } from "@mui/system";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { User } from "@backend/types";
-import { create as createUser } from "../api/user";
-import useUserState from "../actions/user";
+import { GlobalUserContext } from "../state/user";
+import { useEffect } from "react";
 
 const Error = styled("div")(({ theme }) => ({
   color: "red",
@@ -34,6 +34,7 @@ const Error = styled("div")(({ theme }) => ({
 
 function NewUser() {
   const theme = useTheme();
+  const { create } = useContext(GlobalUserContext);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -44,14 +45,14 @@ function NewUser() {
     if (name && email && pass) {
       setError("");
       try {
-        createUser({ email, name, password: pass });
+        create({ email, name, password: pass });
       } catch (e) {
         setError(String(e));
       }
     } else {
       setError("Please fill out all required fields");
     }
-  }, [name, email, pass]);
+  }, [name, email, pass, create]);
 
   return (
     <div>
@@ -129,27 +130,34 @@ function UsersTableRow({ user }: { user: User }) {
 }
 
 function UsersTable() {
-  const { users: userMap } = useUserState();
+  const { users: userMap, getList } = useContext(GlobalUserContext);
+
+  useEffect(() => {
+    getList();
+  }, [getList]);
 
   const users = useMemo(() => Array.from(userMap.values()), [userMap]);
 
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell>Name</TableCell>
-            <TableCell>Email</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {users.map((user, i) => (
-            <UsersTableRow user={user} key={i} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+  return useMemo(
+    () => (
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map((user, i) => (
+              <UsersTableRow user={user} key={i} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    ),
+    [users]
   );
 }
 

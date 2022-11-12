@@ -1,4 +1,4 @@
-import { Reducer } from "react";
+import { Reducer, createContext } from "react";
 
 import { Action } from "../types";
 import { User } from "@backend/types";
@@ -31,13 +31,19 @@ const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
     switch (action.type) {
       case UserActionType.CREATE:
         if (action.payload?.user) {
-          state.users.set(action.payload.user.uuid, action.payload.user);
+          state = { ...state };
+          state.users = new Map(state.users).set(
+            action.payload.user.uuid,
+            action.payload.user
+          );
         } else {
           throw new Error("No user added");
         }
         break;
       case UserActionType.REMOVE:
         if (action.payload?.user) {
+          state = { ...state };
+          state.users = new Map(state.users);
           state.users.delete(action.payload.user.uuid);
         } else {
           throw new Error("No user removed");
@@ -45,8 +51,9 @@ const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
         break;
       case UserActionType.GET_LIST:
         if (action.payload?.users) {
-          state.users = action.payload?.users.reduce(
-            (map, usr) => map.set(usr.uuid, usr),
+          state = { ...state };
+          state.users = action.payload.users.reduce(
+            (prev, cur) => prev.set(cur.password, cur),
             new Map()
           );
         } else {
@@ -55,6 +62,8 @@ const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
         break;
       case UserActionType.GET:
         if (action.payload?.user) {
+          state = { ...state };
+          state.users = new Map(state.users);
           state.users.set(action.payload?.user.uuid, action.payload.user);
         } else {
           throw new Error("No user");
@@ -62,7 +71,11 @@ const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
         break;
       case UserActionType.UPDATE:
         if (action.payload?.user) {
-          state.users.set(action.payload.user.uuid, action.payload.user);
+          state = { ...state };
+          state.users = new Map(state.users).set(
+            action.payload.user.uuid,
+            action.payload.user
+          );
         } else {
           throw new Error("Cannot update user");
         }
@@ -112,10 +125,15 @@ const actionCreators: UserActionCreators = {
     })),
 };
 
-export default function useUserState() {
+export function useUserState() {
   return useReducerWithActions<UserState, UserActionCreators>({
     reducer,
     initialState,
     actionCreators,
   });
 }
+
+export const GlobalUserContext = createContext({
+  ...initialState,
+  ...actionCreators,
+});

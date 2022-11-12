@@ -17,10 +17,12 @@ const useReducerWithActions = <S, A extends ActionCreators>({
       ...prev,
       // eslint-disable-next-line react-hooks/rules-of-hooks
       [actionKey]: useCallback(
-        async (...args) =>
-          Promise.resolve(actionCreators[actionKey](...args)).then(
-            (result) => result && dispatch(result)
-          ),
+        (...args) =>
+          Promise.resolve(actionCreators[actionKey](...args)).then((result) => {
+            if (result) {
+              dispatch(result);
+            }
+          }),
         [actionKey]
       ),
     }),
