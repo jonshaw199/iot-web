@@ -12,6 +12,7 @@ export enum UserActionType {
   CREATE = "CREATE",
   REMOVE = "REMOVE",
   AUTH = "AUTH",
+  LOGOUT = "LOGOUT",
 }
 
 type UserPayload = {
@@ -39,6 +40,7 @@ type UserActionCreators = {
   update: (uuid: string, user: Partial<User>) => Promise<Action<UserPayload>>;
   remove: (uuid: string) => Promise<Action<UserPayload>>;
   auth: (cred: AuthRequest) => Promise<Action<UserPayload>>;
+  logout: () => Action;
 };
 
 const userActionCreators: UserActionCreators = {
@@ -72,6 +74,7 @@ const userActionCreators: UserActionCreators = {
       type: UserActionType.AUTH,
       payload: { token },
     })),
+  logout: () => ({ type: UserActionType.LOGOUT }),
 };
 
 const userReducer: Reducer<UserState, Action<UserPayload>> = (
@@ -128,6 +131,11 @@ const userReducer: Reducer<UserState, Action<UserPayload>> = (
         } else {
           throw new Error("No token");
         }
+        break;
+      case UserActionType.LOGOUT:
+        state = { ...state, token: "" };
+        localStorage.removeItem("token");
+        break;
     }
   } catch (e) {
     if (typeof e === "string") {

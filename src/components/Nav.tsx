@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useContext } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -20,7 +20,9 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import GroupIcon from "@mui/icons-material/Group";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { Link } from "react-router-dom";
+import { GlobalUserContext } from "../state/user";
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -81,6 +83,7 @@ export default function Nav({
   onClose: () => void;
 }) {
   const theme = useTheme();
+  const { logout } = useContext(GlobalUserContext);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -128,6 +131,17 @@ export default function Nav({
           <NavItem text="Messages" link="messages/" icon={<InboxIcon />} />
           <NavItem text="Settings" link="settings/" icon={<SettingsIcon />} />
           <NavItem text="Users" link="users/" icon={<GroupIcon />} />
+        </List>
+        <Divider />
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => logout()}>
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Drawer>
     </Box>

@@ -5,7 +5,7 @@ export type GlobalContext = {
   users: User[];
 };
 
-export type Action<P> = {
+export type Action<P = any> = {
   type: string;
   payload?: P;
 };
