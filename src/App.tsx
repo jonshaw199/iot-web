@@ -55,7 +55,7 @@ function App() {
         payload: { token: localStorage.getItem("token") },
       });
     }
-  }, [loggedIn]);
+  }, [loggedIn, dispatch]);
 
   return (
     <Router>
