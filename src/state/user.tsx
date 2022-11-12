@@ -26,9 +26,58 @@ type UserState = {
   token: string;
 };
 
-const initialState: UserState = { users: new Map(), errorMsg: "", token: "" };
+const initialUserState: UserState = {
+  users: new Map(),
+  errorMsg: "",
+  token: "",
+};
 
-const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
+type UserActionCreators = {
+  getList: () => Promise<Action>;
+  get: (uuid: string) => Promise<Action>;
+  create: (user: Partial<User>) => Promise<Action>;
+  update: (uuid: string, user: Partial<User>) => Promise<Action>;
+  remove: (uuid: string) => Promise<Action>;
+  auth: (cred: AuthRequest) => Promise<Action>;
+};
+
+const userActionCreators: UserActionCreators = {
+  getList: () =>
+    getList().then((users) => ({
+      type: UserActionType.GET_LIST,
+      payload: { users },
+    })),
+  get: (uuid: string) =>
+    get(uuid).then((user) => ({
+      type: UserActionType.GET,
+      payload: { user },
+    })),
+  create: (user: Partial<User>) =>
+    create(user).then((rsp) => ({
+      type: UserActionType.CREATE,
+      payload: { user: rsp.user },
+    })),
+  update: (uuid: string, user: Partial<User>) =>
+    update(uuid, user).then((user) => ({
+      type: UserActionType.UPDATE,
+      payload: { user },
+    })),
+  remove: (uuid: string) =>
+    remove(uuid).then((user) => ({
+      type: UserActionType.REMOVE,
+      payload: { user },
+    })),
+  auth: (cred: AuthRequest) =>
+    auth(cred).then((res: AuthResponse) => ({
+      type: UserActionType.AUTH,
+      payload: { token: res.token },
+    })),
+};
+
+const userReducer: Reducer<UserState, Action<UserPayload>> = (
+  state,
+  action
+) => {
   state.errorMsg = "";
   try {
     switch (action.type) {
@@ -39,6 +88,7 @@ const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
             action.payload.user.uuid,
             action.payload.user
           );
+          // token?
         } else {
           throw new Error("No user added");
         }
@@ -102,57 +152,15 @@ const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
   return state;
 };
 
-type UserActionCreators = {
-  getList: () => Promise<Action>;
-  get: (uuid: string) => Promise<Action>;
-  create: (user: Partial<User>) => Promise<Action>;
-  update: (uuid: string, user: Partial<User>) => Promise<Action>;
-  remove: (uuid: string) => Promise<Action>;
-  auth: (cred: AuthRequest) => Promise<Action>;
-};
-
-const actionCreators: UserActionCreators = {
-  getList: () =>
-    getList().then((users) => ({
-      type: UserActionType.GET_LIST,
-      payload: { users },
-    })),
-  get: (uuid: string) =>
-    get(uuid).then((user) => ({
-      type: UserActionType.GET,
-      payload: { user },
-    })),
-  create: (user: Partial<User>) =>
-    create(user).then((rsp) => ({
-      type: UserActionType.CREATE,
-      payload: { user: rsp.user },
-    })),
-  update: (uuid: string, user: Partial<User>) =>
-    update(uuid, user).then((user) => ({
-      type: UserActionType.UPDATE,
-      payload: { user },
-    })),
-  remove: (uuid: string) =>
-    remove(uuid).then((user) => ({
-      type: UserActionType.REMOVE,
-      payload: { user },
-    })),
-  auth: (cred: AuthRequest) =>
-    auth(cred).then((res: AuthResponse) => ({
-      type: UserActionType.AUTH,
-      payload: { token: res.token },
-    })),
-};
-
 export function useUserState() {
   return useReducerWithActions<UserState, UserActionCreators>({
-    reducer,
-    initialState,
-    actionCreators,
+    reducer: userReducer,
+    initialState: initialUserState,
+    actionCreators: userActionCreators,
   });
 }
 
 export const GlobalUserContext = createContext({
-  ...initialState,
-  ...actionCreators,
+  ...initialUserState,
+  ...userActionCreators,
 });
