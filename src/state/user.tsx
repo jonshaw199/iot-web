@@ -13,6 +13,7 @@ export enum UserActionType {
   REMOVE = "REMOVE",
   AUTH = "AUTH",
   LOGOUT = "LOGOUT",
+  LOAD_TOKEN = "LOAD_TOKEN",
 }
 
 type UserPayload = {
@@ -41,6 +42,7 @@ type UserActionCreators = {
   remove: (uuid: string) => Promise<Action<UserPayload>>;
   auth: (cred: AuthRequest) => Promise<Action<UserPayload>>;
   logout: () => Action;
+  loadToken: () => Action;
 };
 
 const userActionCreators: UserActionCreators = {
@@ -75,6 +77,7 @@ const userActionCreators: UserActionCreators = {
       payload: { token },
     })),
   logout: () => ({ type: UserActionType.LOGOUT }),
+  loadToken: () => ({ type: UserActionType.LOAD_TOKEN }),
 };
 
 const userReducer: Reducer<UserState, Action<UserPayload>> = (
@@ -135,6 +138,14 @@ const userReducer: Reducer<UserState, Action<UserPayload>> = (
       case UserActionType.LOGOUT:
         state = { ...state, token: "" };
         localStorage.removeItem("token");
+        break;
+      case UserActionType.LOAD_TOKEN:
+        if (!state.token && localStorage.getItem("token")) {
+          state = {
+            ...state,
+            token: localStorage.getItem("token")!,
+          };
+        }
         break;
     }
   } catch (e) {

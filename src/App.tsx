@@ -10,7 +10,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WS from "./components/WS";
 import Users from "./components/Users";
 import Settings from "./components/Settings";
-import { GlobalUserContext, UserActionType, useUserState } from "./state/user";
+import { GlobalUserContext, useUserState } from "./state/user";
 import { useMemo } from "react";
 import Login from "./components/Login";
 
@@ -43,19 +43,13 @@ const deviceId = -1; // to do
 function App() {
   const [open, setOpen] = useState(false);
   const userState = useUserState();
-  const { token, dispatch } = userState;
+  const { token, loadToken } = userState;
 
   const loggedIn = useMemo(() => !!token, [token]);
 
   useEffect(() => {
-    if (!loggedIn && localStorage.getItem("token")) {
-      // Skipping action creator and going straight to reducer with existing token
-      dispatch({
-        type: UserActionType.AUTH,
-        payload: { token: localStorage.getItem("token")! },
-      });
-    }
-  }, [loggedIn, dispatch]);
+    loadToken();
+  }, [loadToken]);
 
   return (
     <Router>
