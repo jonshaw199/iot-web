@@ -106,7 +106,7 @@ const userReducer: Reducer<UserState, Action<UserPayload>> = (
         if (action.payload?.users) {
           state = { ...state };
           state.users = action.payload.users.reduce(
-            (prev, cur) => prev.set(cur.password, cur),
+            (prev, cur) => prev.set(cur.uuid, cur),
             new Map()
           );
         } else {
