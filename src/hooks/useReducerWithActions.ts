@@ -32,6 +32,7 @@ const useReducerWithActions = <S, A extends ActionCreators>({
   return {
     ...value,
     ...wrappedActionCreators,
+    dispatch,
   };
 };
 

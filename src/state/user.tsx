@@ -5,7 +5,7 @@ import { AuthRequest, AuthResponse, User } from "@backend/types";
 import { getList, get, create, remove, update, auth } from "../api/user";
 import useReducerWithActions from "../hooks/useReducerWithActions";
 
-enum UserActionType {
+export enum UserActionType {
   GET_LIST = "GET_LIST",
   GET = "GET",
   UPDATE = "UPDATE",
@@ -89,6 +89,7 @@ const reducer: Reducer<UserState, Action<UserPayload>> = (state, action) => {
             ...state,
             token: action.payload.token,
           };
+          localStorage.setItem("token", action.payload.token);
         } else {
           throw new Error("No token");
         }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { styled, ThemeProvider } from "@mui/material/styles";
 
 import "./App.css";
@@ -10,7 +10,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WS from "./components/WS";
 import Users from "./components/Users";
 import Settings from "./components/Settings";
-import { GlobalUserContext, useUserState } from "./state/user";
+import { GlobalUserContext, UserActionType, useUserState } from "./state/user";
 import { useMemo } from "react";
 import Login from "./components/Login";
 
@@ -43,9 +43,18 @@ const deviceId = -1;
 function App() {
   const [open, setOpen] = useState(false);
   const userState = useUserState();
-  const { token } = userState;
+  const { token, dispatch } = userState;
 
   const loggedIn = useMemo(() => !!token, [token]);
+
+  useEffect(() => {
+    if (!loggedIn && localStorage.getItem("token")) {
+      dispatch({
+        type: UserActionType.AUTH,
+        payload: { token: localStorage.getItem("token") },
+      });
+    }
+  }, [loggedIn]);
 
   return (
     <Router>
