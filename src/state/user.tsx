@@ -1,7 +1,7 @@
 import { Reducer, createContext } from "react";
 
 import { Action } from "../types";
-import { AuthRequest, AuthResponse, User } from "@backend/types";
+import { AuthRequest, User } from "@backend/types";
 import { getList, get, create, remove, update, auth } from "../api/user";
 import useReducerWithActions from "../hooks/useReducerWithActions";
 
@@ -48,27 +48,27 @@ const userActionCreators: UserActionCreators = {
       payload: { users },
     })),
   get: (uuid: string) =>
-    get(uuid).then((user) => ({
+    get(uuid).then((res) => ({
       type: UserActionType.GET,
-      payload: { user },
+      payload: { user: res.user },
     })),
   create: (user: Partial<User>) =>
-    create(user).then((rsp) => ({
+    create(user).then((res) => ({
       type: UserActionType.CREATE,
-      payload: { user: rsp.user },
+      payload: { user: res.user },
     })),
   update: (uuid: string, user: Partial<User>) =>
-    update(uuid, user).then((user) => ({
+    update(uuid, user).then((res) => ({
       type: UserActionType.UPDATE,
-      payload: { user },
+      payload: { user: res.user },
     })),
   remove: (uuid: string) =>
-    remove(uuid).then((user) => ({
+    remove(uuid).then((res) => ({
       type: UserActionType.REMOVE,
-      payload: { user },
+      payload: { user: res.user },
     })),
   auth: (cred: AuthRequest) =>
-    auth(cred).then((res: AuthResponse) => ({
+    auth(cred).then((res) => ({
       type: UserActionType.AUTH,
       payload: { token: res.token },
     })),
