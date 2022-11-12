@@ -1,8 +1,14 @@
-import { UserResponse, User, AuthResponse, AuthRequest } from "@backend/types";
+import {
+  UserResponse,
+  User,
+  AuthResponse,
+  AuthRequest,
+  CreateUserResponse,
+} from "@backend/types";
 import { req } from "./api";
 
 export function create(user: Partial<User>) {
-  return req<UserResponse>("/user", {
+  return req<CreateUserResponse>("/user", {
     method: "POST",
     body: JSON.stringify(user),
     headers: {
@@ -22,7 +28,7 @@ export function update(uuid: string, user: Partial<User>) {
 }
 
 export function remove(uuid: string) {
-  return req<User>(`/user/${uuid}`, {
+  return req<UserResponse>(`/user/${uuid}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -35,7 +41,7 @@ export function getList() {
 }
 
 export function get(uuid: string) {
-  return req<User>(`/user/${uuid}`);
+  return req<UserResponse>(`/user/${uuid}`);
 }
 
 export function auth(body: AuthRequest) {
