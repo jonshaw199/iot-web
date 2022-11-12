@@ -42,8 +42,8 @@ type UserActionCreators = {
     uuid: string,
     user: Partial<User>
   ) => Promise<Action<{ user: User }>>;
-  remove: (uuid: string) => Promise<Action>;
-  auth: (cred: AuthRequest) => Promise<Action>;
+  remove: (uuid: string) => Promise<Action<{ user: User }>>;
+  auth: (cred: AuthRequest) => Promise<Action<{ token: string }>>;
 };
 
 const userActionCreators: UserActionCreators = {
