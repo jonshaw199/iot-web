@@ -49,6 +49,7 @@ function App() {
 
   useEffect(() => {
     if (!loggedIn && localStorage.getItem("token")) {
+      // Skipping action creator and going straight to reducer with existing token
       dispatch({
         type: UserActionType.AUTH,
         payload: { token: localStorage.getItem("token") },
@@ -76,14 +77,14 @@ function App() {
                     <Route path="settings/" element={<Settings />} />
                   </Routes>
                 </Main>
+                <WS
+                  url={`ws://127.0.0.1:3000/web/ws?orgId=${orgId}&deviceId=${deviceId}`}
+                />
               </>
             ) : (
               <Login />
             )}
           </Outer>
-          <WS
-            url={`ws://127.0.0.1:3000/web/ws?orgId=${orgId}&deviceId=${deviceId}`}
-          />
         </GlobalUserContext.Provider>
       </ThemeProvider>
     </Router>
