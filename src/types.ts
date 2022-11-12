@@ -10,10 +10,6 @@ export type Action<P = any> = {
   payload?: P;
 };
 
-export type Actions<P> = {
-  [key: string]: Action<P>;
-};
-
 export type ActionCreator<A extends any[], P> = (
   ...args: {
     [B in keyof A]: A[B];
