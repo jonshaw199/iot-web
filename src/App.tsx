@@ -52,7 +52,7 @@ function App() {
       // Skipping action creator and going straight to reducer with existing token
       dispatch({
         type: UserActionType.AUTH,
-        payload: { token: localStorage.getItem("token") },
+        payload: { token: localStorage.getItem("token")! },
       });
     }
   }, [loggedIn, dispatch]);
