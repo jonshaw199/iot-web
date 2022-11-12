@@ -5,17 +5,15 @@ export type GlobalContext = {
   users: User[];
 };
 
-export type Action<P = any> = {
+export type Action<P> = {
   type: string;
   payload?: P;
 };
 
-export type ActionCreator<A extends any[], P> = (
-  ...args: {
-    [B in keyof A]: A[B];
-  }
+export type ActionCreator<P> = (
+  ...args: any
 ) => Action<P> | Promise<Action<P>> | undefined | null;
 
-export type ActionCreators<P = any> = {
-  [key: string]: ActionCreator<any, P>;
+export type ActionCreators<P> = {
+  [key: string]: ActionCreator<P>;
 };

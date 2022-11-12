@@ -33,17 +33,12 @@ const initialUserState: UserState = {
 };
 
 type UserActionCreators = {
-  getList: () => Promise<Action<{ users: User[] }>>;
-  get: (uuid: string) => Promise<Action<{ user: User }>>;
-  create: (
-    user: Partial<User>
-  ) => Promise<Action<{ user: User; token: string }>>;
-  update: (
-    uuid: string,
-    user: Partial<User>
-  ) => Promise<Action<{ user: User }>>;
-  remove: (uuid: string) => Promise<Action<{ user: User }>>;
-  auth: (cred: AuthRequest) => Promise<Action<{ token: string }>>;
+  getList: () => Promise<Action<UserPayload>>;
+  get: (uuid: string) => Promise<Action<UserPayload>>;
+  create: (user: Partial<User>) => Promise<Action<UserPayload>>;
+  update: (uuid: string, user: Partial<User>) => Promise<Action<UserPayload>>;
+  remove: (uuid: string) => Promise<Action<UserPayload>>;
+  auth: (cred: AuthRequest) => Promise<Action<UserPayload>>;
 };
 
 const userActionCreators: UserActionCreators = {
