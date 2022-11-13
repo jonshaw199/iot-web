@@ -1,7 +1,15 @@
 import { useEffect, useRef } from "react";
 import { w3cwebsocket, w3cwebsocket as W3CWebSocket } from "websocket";
 
-export default function WS({ url }: { url: string }) {
+import { InfoMessage, MessageType, TransportType } from "@backend/types";
+
+export default function WS({
+  url,
+  sendInfo,
+}: {
+  url: string;
+  sendInfo?: boolean;
+}) {
   const client = useRef<w3cwebsocket>();
 
   useEffect(() => {
@@ -9,13 +17,22 @@ export default function WS({ url }: { url: string }) {
       client.current = new W3CWebSocket(url);
       client.current.onopen = () => {
         console.log("WS connected");
-        client.current?.send("test");
+        if (sendInfo) {
+          const m: InfoMessage = {
+            state: -1,
+            senderID: Number(process.env.DEVICE_ID),
+            type: MessageType.TYPE_INFO,
+            info: {},
+            transportType: TransportType.TRANSPORT_WEBSOCKET,
+          };
+          client.current?.send(m);
+        }
       };
       client.current.onmessage = (msg) => {
         console.log(`WS msg: ${msg}`);
       };
     }
-  }, [url]);
+  }, [url, sendInfo]);
 
   return <></>;
 }
