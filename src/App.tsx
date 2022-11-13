@@ -72,7 +72,7 @@ function App() {
                   </Routes>
                 </Main>
                 <WS
-                  url={`ws://127.0.0.1:3000/web/ws?orgId=${orgId}&deviceId=${deviceId}`}
+                  url={`ws://127.0.0.1:3000/lights/ws?orgId=${orgId}&deviceId=${deviceId}`}
                 />
               </>
             ) : (
