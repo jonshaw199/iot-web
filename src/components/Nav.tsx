@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -21,8 +20,12 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import GroupIcon from "@mui/icons-material/Group";
 import LogoutIcon from "@mui/icons-material/Logout";
+import HomeWorkIcon from "@mui/icons-material/HomeWork";
+import DevBoardIcon from "@mui/icons-material/DeveloperBoard";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import { Link } from "react-router-dom";
-import { GlobalUserContext } from "../state/user";
+import { useDispatch } from "../state/store";
+import { logout } from "../state/userSlice";
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -83,7 +86,7 @@ export default function Nav({
   onClose: () => void;
 }) {
   const theme = useTheme();
-  const { logout } = useContext(GlobalUserContext);
+  const dispatch = useDispatch();
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -100,7 +103,7 @@ export default function Nav({
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            AF1LS
+            AF1SH
           </Typography>
         </Toolbar>
       </AppBar>
@@ -128,14 +131,17 @@ export default function Nav({
         <Divider />
         <List>
           <NavItem text="Dashboard" link="/" icon={<DashboardIcon />} />
-          <NavItem text="Messages" link="messages/" icon={<InboxIcon />} />
-          <NavItem text="Settings" link="settings/" icon={<SettingsIcon />} />
-          <NavItem text="Users" link="users/" icon={<GroupIcon />} />
+          <NavItem text="Lights" link="lights/" icon={<LightbulbIcon />} />
         </List>
         <Divider />
         <List>
+          <NavItem text="Messages" link="messages/" icon={<InboxIcon />} />
+          <NavItem text="Users" link="users/" icon={<GroupIcon />} />
+          <NavItem text="Orgs" link="orgs/" icon={<HomeWorkIcon />} />
+          <NavItem text="Devices" link="devices/" icon={<DevBoardIcon />} />
+          <NavItem text="Settings" link="settings/" icon={<SettingsIcon />} />
           <ListItem disablePadding>
-            <ListItemButton onClick={() => logout()}>
+            <ListItemButton onClick={() => dispatch(logout())}>
               <ListItemIcon>
                 <LogoutIcon />
               </ListItemIcon>

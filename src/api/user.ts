@@ -4,10 +4,12 @@ import {
   AuthResponse,
   AuthRequest,
   CreateUserResponse,
-} from "@backend/types";
+  CreateUserRequest,
+  UserListResponse,
+} from "../serverTypes";
 import { req } from "./api";
 
-export function create(user: Partial<User>) {
+export function createUser(user: CreateUserRequest) {
   return req<CreateUserResponse>("/user", {
     method: "POST",
     body: JSON.stringify(user),
@@ -17,8 +19,8 @@ export function create(user: Partial<User>) {
   });
 }
 
-export function update(uuid: string, user: Partial<User>) {
-  return req<UserResponse>(`/user${uuid}`, {
+export function updateUser(id: string, user: Partial<User>) {
+  return req<UserResponse>(`/user${id}`, {
     method: "PUT",
     body: JSON.stringify(user),
     headers: {
@@ -27,8 +29,8 @@ export function update(uuid: string, user: Partial<User>) {
   });
 }
 
-export function remove(uuid: string) {
-  return req<UserResponse>(`/user/${uuid}`, {
+export function removeUser(id: string) {
+  return req<UserResponse>(`/user/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -36,12 +38,12 @@ export function remove(uuid: string) {
   });
 }
 
-export function getList() {
-  return req<User[]>("/user");
+export function getUserList() {
+  return req<UserListResponse>("/user");
 }
 
-export function get(uuid: string) {
-  return req<UserResponse>(`/user/${uuid}`);
+export function getUser(id: string) {
+  return req<UserResponse>(`/user/${id}`);
 }
 
 export function auth(body: AuthRequest) {
@@ -51,5 +53,14 @@ export function auth(body: AuthRequest) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
+  });
+}
+
+export function authWithToken() {
+  return req<AuthResponse>("/user/authWithToken", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 }

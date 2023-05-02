@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -12,16 +12,32 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
-import { Collapse, IconButton } from "@mui/material";
+import {
+  Button,
+  Collapse,
+  IconButton,
+  TextField,
+  useTheme,
+} from "@mui/material";
+
+import { Org } from "../serverTypes";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Box } from "@mui/system";
+import { useDispatch, useSelector } from "../state/store";
+import { createOrgThunk, orgsSelector } from "../state/orgSlice";
 
-import { Message } from "../serverTypes";
-import { useSelector } from "../state/store";
-import { messagesSelector } from "../state/messageSlice";
+const Error = styled("div")(({ theme }) => ({
+  color: "red",
+  paddingTop: theme.spacing(1),
+}));
 
-function NewMessage() {
+function NewOrg() {
+  const theme = useTheme();
+  const [error] = useState("");
+  const [name, setName] = useState("");
+  const dispatch = useDispatch();
+
   return (
     <div>
       <Accordion>
@@ -30,20 +46,33 @@ function NewMessage() {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography>New Message</Typography>
+          <Typography>New Org</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
+          <Box display="flex" gap={1} flexWrap="wrap">
+            <TextField
+              required
+              label="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </Box>
+          {error && <Error>{error}</Error>}
+          <Box pt={theme.spacing(1)}>
+            <Button
+              variant="outlined"
+              onClick={() => dispatch(createOrgThunk({ name }))}
+            >
+              Submit
+            </Button>
+          </Box>
         </AccordionDetails>
       </Accordion>
     </div>
   );
 }
 
-function MessageTableRow({ message }: { message: Message }) {
+function MessageTableRow({ org }: { org: Org }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -58,15 +87,16 @@ function MessageTableRow({ message }: { message: Message }) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {message.senderId.toString()}
+          {org._id.toString()}
         </TableCell>
-        <TableCell>{message.type}</TableCell>
-        <TableCell>{message.state}</TableCell>
+        <TableCell component="th" scope="row">
+          {org.name}
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>Message</Box>
+            <Box sx={{ margin: 1 }}>Org</Box>
           </Collapse>
         </TableCell>
       </TableRow>
@@ -74,8 +104,10 @@ function MessageTableRow({ message }: { message: Message }) {
   );
 }
 
-function MessageTable() {
-  const messages = useSelector(messagesSelector);
+function OrgTable() {
+  const orgMap = useSelector(orgsSelector);
+
+  const orgs = useMemo(() => Object.values(orgMap), [orgMap]);
 
   return (
     <TableContainer component={Paper}>
@@ -83,14 +115,13 @@ function MessageTable() {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Sender ID</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>State</TableCell>
+            <TableCell>Org ID</TableCell>
+            <TableCell>Name</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {messages.map((message, i) => (
-            <MessageTableRow message={message} key={i} />
+          {orgs.map((org, i) => (
+            <MessageTableRow org={org} key={i} />
           ))}
         </TableBody>
       </Table>
@@ -104,11 +135,11 @@ const Container = styled("div")(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-export default function Messages() {
+export default function Orgs() {
   return (
     <Container>
-      <NewMessage />
-      <MessageTable />
+      <NewOrg />
+      <OrgTable />
     </Container>
   );
 }

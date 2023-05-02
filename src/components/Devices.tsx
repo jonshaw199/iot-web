@@ -1,4 +1,9 @@
-import { useMemo, useState, useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -8,68 +13,51 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Button,
   Collapse,
   IconButton,
   MenuItem,
   TextField,
-  Typography,
   useTheme,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Box } from "@mui/system";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Types } from "mongoose";
 
-import { Org, User } from "../serverTypes";
-import {
-  usersSelector,
-  createUserThunk,
-  removeUserThunk,
-} from "../state/userSlice";
+import { Board, Device, Org } from "../serverTypes";
 import { orgsSelector } from "../state/orgSlice";
 import { useDispatch, useSelector } from "../state/store";
-import { Types } from "mongoose";
+import { createDeviceThunk, devicesSelector } from "../state/deviceSlice";
 
 const Error = styled("div")(({ theme }) => ({
   color: "red",
   paddingTop: theme.spacing(1),
 }));
 
-function NewUser() {
+function NewDevice() {
   const theme = useTheme();
   const dispatch = useDispatch();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [pass, setPass] = useState("");
+  const orgs = useSelector(orgsSelector);
   const [error, setError] = useState("");
+  const [name, setName] = useState("");
+  const [board, setBoard] = useState("");
   const [orgId, setOrgId] = useState("");
 
-  const orgs = useSelector(orgsSelector);
-
   const submit = useCallback(() => {
-    if (name && email && pass) {
-      setError("");
-      try {
-        dispatch(
-          createUserThunk({
-            email,
-            name,
-            password: pass,
-            orgId: new Types.ObjectId(orgId),
-          })
-        );
-      } catch (e) {
-        setError(String(e));
-      }
-    } else {
-      setError("Please fill out all required fields");
+    try {
+      dispatch(
+        createDeviceThunk({
+          name,
+          board: board as Board,
+          orgId: new Types.ObjectId(orgId),
+        })
+      );
+    } catch (e) {
+      setError(String(e));
     }
-  }, [name, email, pass, orgId, dispatch]);
+  }, [name, board, orgId, dispatch]);
 
   return (
     <div>
@@ -79,7 +67,7 @@ function NewUser() {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography>New User</Typography>
+          <Typography>New Device</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Box display="flex" gap={1} flexWrap="wrap">
@@ -90,19 +78,18 @@ function NewUser() {
               onChange={(e) => setName(e.target.value)}
             />
             <TextField
-              required
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              required
-              label="Password"
-              type="password"
-              value={pass}
-              onChange={(e) => setPass(e.target.value)}
-            />
+              label="Board"
+              value={board}
+              onChange={(e) => setBoard(e.target.value || Board.BOARD_OTHER)}
+              select
+              sx={{ minWidth: 100 }}
+            >
+              {Object.values(Board).map((b, i) => (
+                <MenuItem value={b} key={i}>
+                  {b}
+                </MenuItem>
+              ))}
+            </TextField>
             <TextField
               label="Org"
               value={orgId}
@@ -129,9 +116,8 @@ function NewUser() {
   );
 }
 
-function UsersTableRow({ user }: { user: User }) {
+function DeviceTableRow({ device }: { device: Device }) {
   const [open, setOpen] = useState(false);
-  const dispatch = useDispatch();
 
   return (
     <>
@@ -146,28 +132,22 @@ function UsersTableRow({ user }: { user: User }) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {user._id.toString()}
+          {device._id.toString()}
         </TableCell>
         <TableCell component="th" scope="row">
-          {user.orgId.toString()}
+          {device.orgId.toString()}
         </TableCell>
         <TableCell component="th" scope="row">
-          {user.name}
+          {device.name}
         </TableCell>
-        <TableCell>{user.email}</TableCell>
+        <TableCell component="th" scope="row">
+          {device.board}
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Button
-                variant="outlined"
-                color="error"
-                onClick={() => dispatch(removeUserThunk(user._id.toString()))}
-              >
-                Delete
-              </Button>
-            </Box>
+            <Box sx={{ margin: 1 }}>Org</Box>
           </Collapse>
         </TableCell>
       </TableRow>
@@ -175,33 +155,30 @@ function UsersTableRow({ user }: { user: User }) {
   );
 }
 
-function UsersTable() {
-  const userMap = useSelector(usersSelector);
+function DeviceTable() {
+  const deviceMap = useSelector(devicesSelector);
 
-  const users = useMemo(() => Object.values(userMap), [userMap]);
+  const devices = useMemo(() => Object.values(deviceMap), [deviceMap]);
 
-  return useMemo(
-    () => (
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell />
-              <TableCell>User ID</TableCell>
-              <TableCell>Org ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user, i) => (
-              <UsersTableRow user={user} key={i} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    ),
-    [users]
+  return (
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell />
+            <TableCell>Device ID</TableCell>
+            <TableCell>Org ID</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Board</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {devices.map((d, i) => (
+            <DeviceTableRow device={d} key={i} />
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
@@ -211,11 +188,11 @@ const Container = styled("div")(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-export default function Messages() {
+export default function Devices() {
   return (
     <Container>
-      <NewUser />
-      <UsersTable />
+      <NewDevice />
+      <DeviceTable />
     </Container>
   );
 }

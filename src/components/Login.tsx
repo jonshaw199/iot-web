@@ -1,7 +1,9 @@
 import { TextField, styled, Button, Typography } from "@mui/material";
 import { Box, useTheme } from "@mui/system";
-import { useCallback, useContext, useState } from "react";
-import { GlobalUserContext } from "../state/user";
+import { useCallback, useState } from "react";
+
+import { useDispatch } from "../state/store";
+import { authThunk } from "../state/userSlice";
 
 const Error = styled("div")(({ theme }) => ({
   color: "red",
@@ -10,7 +12,7 @@ const Error = styled("div")(({ theme }) => ({
 
 export default function Login() {
   const theme = useTheme();
-  const { auth } = useContext(GlobalUserContext);
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
@@ -20,14 +22,14 @@ export default function Login() {
     if (email && pass) {
       setError("");
       try {
-        auth({ email, password: pass });
+        dispatch(authThunk({ email, password: pass }));
       } catch (e) {
         setError(String(e));
       }
     } else {
       setError("Please fill out all required fields");
     }
-  }, [email, pass, auth]);
+  }, [email, pass, dispatch]);
 
   return (
     <Box
@@ -37,35 +39,42 @@ export default function Login() {
       height="100%"
       width="100%"
     >
-      <Box
-        maxWidth={250}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        gap={theme.spacing(1)}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit();
+        }}
       >
-        <Typography variant="h5">Login</Typography>
-        <TextField
-          required
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <TextField
-          required
-          label="Password"
-          type="password"
-          value={pass}
-          onChange={(e) => setPass(e.target.value)}
-        />
-        {error && <Error>{error}</Error>}
-        <Box pt={theme.spacing(1)}>
-          <Button variant="outlined" onClick={() => submit()}>
-            Submit
-          </Button>
+        <Box
+          maxWidth={250}
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          gap={theme.spacing(1)}
+        >
+          <Typography variant="h5">Login</Typography>
+          <TextField
+            required
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            required
+            label="Password"
+            type="password"
+            value={pass}
+            onChange={(e) => setPass(e.target.value)}
+          />
+          {error && <Error>{error}</Error>}
+          <Box pt={theme.spacing(1)}>
+            <Button variant="outlined" type="submit">
+              Submit
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      </form>
     </Box>
   );
 }
