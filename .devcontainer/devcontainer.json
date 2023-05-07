@@ -7,7 +7,7 @@
   //"features": {}
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   //"forwardPorts": [3020],
-  "appPort": "3020",
+  "appPort": "3020:3020",
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "cd .devcontainer && sudo bash postCreate.sh"
   // Configure tool-specific properties.
